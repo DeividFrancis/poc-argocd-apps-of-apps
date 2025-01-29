@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prometheus
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://prometheus-community.github.io/helm-charts
+    chart: prometheus
+    targetRevision: 27.1.0
+    helm:
+      parameters:
+        - name: alertmanager.enabled
+          value: "false"
+        - name: pushgateway.enabled
+          value: "false"
+        - name: server.service.type
+          value: "ClusterIP"
+        - name: server.persistentVolume.enabled
+          value: "false"
+      releaseName: prometheus
+      namespace: monitoramento
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoramento
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+    syncOptions:
+      - CreateNamespace=true
