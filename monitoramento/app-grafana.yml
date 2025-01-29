@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: grafana
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://grafana.github.io/helm-charts
+    chart: grafana
+    targetRevision: 8.8.5
+    helm:
+      parameters:
+        - name: server.service.type
+          value: "ClusterIP"
+      releaseName: grafana
+      namespace: monitoramento
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoramento
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+    syncOptions:
+      - CreateNamespace=true
